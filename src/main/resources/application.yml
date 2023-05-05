@@ -14,6 +14,6 @@ mybatis-plus:
   mapper-locations: classpath:mapper/*Mapper.xml
   configuration:
     # 是否开启驼峰映射，默认是true
-    map-underscore-to-camel-case: false
+    map-underscore-to-camel-case: true
     # 开启查询日志
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
