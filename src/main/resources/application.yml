@@ -1,9 +1,5 @@
 spring:
   thymeleaf:
-    mode: HTML5
-    encoding: utf8
-    servlet:
-      content-type: text/html
     cache: false    # 关闭缓存
   # 数据源配置
   datasource:

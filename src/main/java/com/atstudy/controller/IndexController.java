@@ -9,14 +9,19 @@ public class IndexController {
 
     @RequestMapping({"/","/index"})
     public String index(){
-        return "index";
+        return "index/index";
     }
 
+
+
+    @RequestMapping("/login")
+    public String login(){
+        return "index/login";
+    }
 
     @RequestMapping("/home")
     public String home(){
-        return "home";
+        return "index/home";
     }
-
 
 }
