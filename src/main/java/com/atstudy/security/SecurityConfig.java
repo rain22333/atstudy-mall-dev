@@ -1,5 +1,6 @@
 package com.atstudy.security;
 
+import com.atstudy.security.handler.LogOutSuccessHandler;
 import com.atstudy.security.handler.LoginErrorHandler;
 import com.atstudy.security.handler.LoginSuccessHandler;
 import com.atstudy.security.handler.PermissionValidErrorHandler;
@@ -42,6 +43,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Resource
     private PermissionValidErrorHandler permissionValidErrorHandler;
 
+    @Resource
+    private LogOutSuccessHandler logOutSuccessHandler;
+
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         // 配置登录验证的方式
@@ -72,17 +77,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 })
                 .and()
                 .formLogin()
-                .loginPage("/index/login")                  // 登录的表单页面
-                .loginProcessingUrl("/index/loginDo")       // 登录表单的处理页面
-                .usernameParameter("admin_name")                  // 账户名称
-                .passwordParameter("admin_pass")            // 账户密码
-                .failureHandler(loginErrorHandler)                           // 登录处理器
-                .successHandler(loginSuccessHandler)                           // 登录成功的处理器
+                .loginPage("/index/login")                                  // 登录的表单页面
+                .loginProcessingUrl("/index/loginDo")                       // 登录表单的处理页面
+                .usernameParameter("admin_name")                            // 账户名称
+                .passwordParameter("admin_pass")                            // 账户密码
+                .failureHandler(loginErrorHandler)                          // 登录处理器
+                .successHandler(loginSuccessHandler)                        // 登录成功的处理器
                 .permitAll()
+                .and()
+                .logout()                           // 退出
+                .logoutUrl("/index/logout")         // 安全退出页面
+                .logoutSuccessHandler(logOutSuccessHandler)             // 退出成功处理器
                 .and()
                 .csrf()
                 .disable()
                 .exceptionHandling()
-                .accessDeniedHandler(permissionValidErrorHandler);                 // 权限验证失败的处理器
+                .accessDeniedHandler(permissionValidErrorHandler);         // 权限验证失败的处理器
     }
 }

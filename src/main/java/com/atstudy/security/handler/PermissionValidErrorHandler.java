@@ -16,7 +16,7 @@ import java.io.IOException;
 public class PermissionValidErrorHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-
-        response.sendRedirect("/index/error");
+        response.setContentType("text/html;charset=UTF-8");
+        response.sendRedirect("/index/error?message=You do not hava access to access this page");
     }
 }

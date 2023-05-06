@@ -17,5 +17,9 @@
         <collection property="roleList" column="admin_id"
                     ofType="com.atstudy.entity.Role"
                     select="com.atstudy.mapper.RoleMapper.getRoleListByAdminId"/>
-    </resultMap>
+
+        <collection property="menuList" column="admin_id"
+                    ofType="com.atstudy.entity.Menu"
+                    select="com.atstudy.mapper.MenuMapper.listByAdminId"/>
+     </resultMap>
 </mapper>

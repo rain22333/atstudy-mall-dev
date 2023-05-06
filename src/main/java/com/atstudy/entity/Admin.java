@@ -26,6 +26,10 @@ public class Admin implements UserDetails {
     // 一个用户可以拥有多个角色
     private List<Role> roleList = new ArrayList<>();
 
+    // 一个用户可以访问多个菜单
+    private List<Menu> menuList = new ArrayList<>();
+
+
 
     // 获取到授权列表
     public Collection<? extends GrantedAuthority> getAuthorities() {

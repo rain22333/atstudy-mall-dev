@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Param;
 public interface AdminMapper extends BaseMapper<Admin> {
 
     /**
-     * 根据用户名查询到一个带有角色列表的用户对象
+     * 根据用户名查询到一个带有角色列表和菜单列表的用户对象
      * @param name
      * @return
      */
