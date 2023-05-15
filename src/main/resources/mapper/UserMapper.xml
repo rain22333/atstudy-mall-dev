@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.atstudy.mapper.UserMapper">
+    <select id="listBySearchBo" resultType="com.atstudy.entity.User">
+        select * from user
+        <where>
+            <if test="searchBo.userId != null">
+                user_id = #{searchBo.userId}
+            </if>
+            <if test="searchBo.userName != null and searchBo.userName.length > 0">
+               and user_name = #{searchBo.userName}
+            </if>
+            <if test="searchBo.userPhone != null and searchBo.userPhone.length > 0">
+               and user_phone = #{searchBo.userPhone}
+            </if>
+            <if test="searchBo.userEmail != null and searchBo.userEmail.length > 0">
+               and user_email = #{searchBo.userEmail}
+            </if>
+        </where>
+        limit
+            #{pageBo.startIndex},#{pageBo.pageSize}
+
+    </select>
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(*) from user
+        <where>
+            <if test="searchBo.userId != null">
+                user_id = #{searchBo.userId}
+            </if>
+            <if test="searchBo.userName != null and searchBo.userName.length > 0">
+               and user_name = #{searchBo.userName}
+            </if>
+            <if test="searchBo.userPhone != null and searchBo.userPhone.length > 0">
+               and user_phone = #{searchBo.userPhone}
+            </if>
+            <if test="searchBo.userEmail != null and searchBo.userEmail.length > 0">
+               and user_email = #{searchBo.userEmail}
+            </if>
+        </where>
+
+    </select>
+</mapper>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>添加商品</title>
+    <script th:src="@{/js/bootstrap-4.6.1.min.js}"></script>
+    <script th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script th:src="@{/js/global.js}"></script>
+    <link th:href="@{/css/bootstrap-4.6.1.min.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container-fluid">
+    <form action="/sku/save" method="post">
+
+
+
+        <div class="input-group my-2">
+            <div class="input-append">
+                <div class="input-group-text">商品名称</div>
+            </div>
+            <input type="text" name="skuName" class="form-control" placeholder="请输入商品名称">
+        </div>
+
+
+        <div class="input-group my-2">
+            <div class="input-append">
+                <div class="input-group-text">商品价格</div>
+            </div>
+            <input type="text" name="skuPrice" class="form-control" placeholder="请输入商品价格">
+        </div>
+
+        <div class="input-group my-2">
+            <div class="input-append">
+                <div class="input-group-text">商品原价</div>
+            </div>
+            <input type="text" name="skuOriginalprice" class="form-control" placeholder="请输入商品原价">
+        </div>
+
+        <div class="input-group my-2">
+            <div class="input-append">
+                <div class="input-group-text">商品折扣金额</div>
+            </div>
+            <input type="text" name="skuCostprice" class="form-control" placeholder="请输入商品折扣金额">
+        </div>
+
+        <div class="input-group my-2">
+            <div class="input-append">
+                <div class="input-group-text">商品库存</div>
+            </div>
+            <input type="text" name="skuQuantity" class="form-control" placeholder="请输入商品库存">
+        </div>
+
+
+        <div class="input-group my-2">
+            <div class="input-append">
+                <div class="input-group-text">所属商品spu</div>
+            </div>
+            <select class="form-control spu" name="skuSpuId">
+                <option value="-1">请选择所属商品spu</option>
+                <option th:each="spu : ${spuList}"
+                        th:value="${spu.spuId}"
+                        th:text="${spu.spuName}"></option>
+            </select>
+        </div>
+
+
+
+
+        <!--用于存放属性键、属性值的盒子-->
+        <div class="template-group">
+
+        </div>
+
+
+
+
+
+
+        <button type="submit" class="my-3 btn btn-primary">添加商品sku</button>
+    </form>
+</div>
+
+<div class="input-group my-2 template" hidden>
+    <div class="input-append">
+        <!--这个div用于提示用户选择属性键的属性值，例如:请选择颜色-->
+        <div class="input-group-text key-name" ></div>
+        <input name="keyList[0].keyId" class="key-id" hidden>
+        <input name="keyList[0].keyName" class="key-Name" hidden>
+    </div>
+    <!--这个selected用于提交属性值的Id-->
+    <select class="form-control value-id" name="valueList[0].id">
+
+    </select>
+    <!--这个selected用于提交属性值的Name-->
+    <select  class="value-name" hidden name="valueList[0].valueName">
+
+    </select>
+
+</div>
+
+
+<script>
+
+
+
+// 给value-id绑定change事件
+$(".value-id").change(function(){
+    // 获取到当前selected选中的索引
+    let index = $(this).get(0).selectedIndex
+    // 将value-name的selected选中的值也改变
+    $(this).parents(".template").find(".value-name").get(0).selectedIndex = index;
+})
+
+
+// 选择商品spu之后，需要发送请求获取到当前spu下的所有的规格属性键、值
+$(".spu").change(function(){
+    // 将之前的模板全部删除
+    $(".template-group").find(".template").remove()
+
+    // 发送ajax请求
+    $.ajax({
+        url : "/sku/getKeyValue",
+        type :　"GET",
+        data: {spuId :$(this).val() },
+        success : function(data){
+             // 遍历获取到的数据，遍历带有属性值的属性键
+             for(let i = 0; i < data.length; i++){
+
+                // 克隆模板
+                let clone = $(".template").last().clone(true)
+                // 将这个克隆出来的模板追加到template-group里面
+                clone.appendTo(".template-group")
+                clone.prop("hidden","")
+                // 获取到当前属性键的名称
+                // 将拼接出来的文字写道class为key-name的div中
+                clone.find(".key-name").html("请选择" + data[i].keyName)
+                clone.find(".key-id").prop("value",data[i].keyId)
+                clone.find(".key-Name").prop("value",data[i].keyName)
+                // 遍历当前属性键中的属性值，创建option加到selected中
+                for(let j = 0; j < data[i].valueList.length; j++){
+                    clone.find(".value-id").append("<option value='"+data[i].valueList[j].id+"'>" +data[i].valueList[j].valueName+"</option>")
+                    clone.find(".value-name").append("<option value='"+data[i].valueList[j].valueName+"'>" +data[i].valueList[j].valueName+"</option>")
+                }
+             }
+
+            reorder()
+        }
+
+    })
+
+
+})
+
+
+
+// 给需要提交上去的value-id和value-name重新排序
+function reorder (){
+    // 给value-id重新排列索引
+    $(".value-id").each(function (index,item) {
+        $(this).prop("name","valueList[" + index + "].id")
+    })
+
+    // 给value-name重新排列索引
+    $(".value-name").each(function (index,item) {
+        $(this).prop("name","valueList[" + index + "].valueName")
+    })
+
+    // 给key-id重新排列索引
+    $(".key-id").each(function (index,item) {
+        $(this).prop("name","keyList[" + index + "].keyId")
+    })
+
+    // 给key-Name重新排列索引
+    $(".key-Name").each(function (index,item) {
+        $(this).prop("name","keyList[" + index + "].keyName")
+    })
+}
+
+
+
+</script>
+</body>
+</html>

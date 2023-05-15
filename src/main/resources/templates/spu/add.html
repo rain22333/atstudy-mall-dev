@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>添加商品</title>
+    <script th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script th:src="@{/js/bootstrap-4.6.1.min.js}"></script>
+    <script th:src="@{/js/global.js}"></script>
+    <link th:href="@{/css/bootstrap-4.6.1.min.css}" rel="stylesheet">
+
+
+    <!--ueditor配置文件-->
+    <script th:src="@{/edit/ueditor.config.js}"></script>
+    <!--ueditor核心-->
+    <script th:src="@{/edit/ueditor.all.js}"></script>
+    <!--中文语言包-->
+    <script th:src="@{/edit/zh-cn.js}"></script>
+
+</head>
+<body>
+<div class="container-fluid">
+    <form action="/spu/save" method="post">
+
+        <div class="input-group my-2">
+            <div class="input-append">
+                <div class="input-group-text">商品Spu名称</div>
+            </div>
+            <input type="text" name="spuName" class="form-control" placeholder="请输入商品名称">
+        </div>
+
+
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect01">规格类型</label>
+            </div>
+            <select class="custom-select" id="inputGroupSelect01" name="spuSkuType">
+                <option value="1">多规格</option>
+                <option value="0">单规格</option>
+            </select>
+        </div>
+
+
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect02">上架状态</label>
+            </div>
+            <select class="custom-select" id="inputGroupSelect02" name="spuStatus">
+                <option value="0">上架</option>
+                <option value="1">下架</option>
+            </select>
+        </div>
+
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect03">商品品牌</label>
+            </div>
+            <select class="custom-select" id="inputGroupSelect03" name="spuBrandId">
+                <option value="-1">请选择商品品牌</option>
+                <option th:each="brand : ${brandList}"
+                        th:value="${brand.brandId}"
+                        th:text="${brand.brandName}"></option>
+            </select>
+        </div>
+
+
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect04">商品分类</label>
+            </div>
+            <select class="custom-select" id="inputGroupSelect04" name="cateId">
+                <option value="-1">请选择商品分类</option>
+                <option th:each="cate : ${cateList}"
+                        th:value="${cate.cateId}"
+                        th:text="${cate.cateName}"></option>
+            </select>
+        </div>
+
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <span class="input-group-text">商品标题</span>
+            </div>
+            <textarea type="text" class="form-control" name="spuTitle" aria-label="With textarea" placeholder="请输入商品标题"></textarea>
+        </div>
+
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <span class="input-group-text">商品介绍</span>
+            </div>
+            <textarea type="text" id="info"  name="spuIntroduction" aria-label="With textarea" placeholder="请输入商品介绍"></textarea>
+        </div>
+
+
+
+        <button type="submit" class="my-3 btn btn-primary">添加商品</button>
+    </form>
+</div>
+
+<script>
+    // 在script标签中将目标文本域标签替换成富文本编辑器
+    let editor = UE.getEditor('info');
+
+    UE.Editor.prototype._bkGetActionUrl = UE.Editor.prototype.getActionUrl;
+    UE.Editor.prototype.getActionUrl = function(action) {
+        if (action == 'uploadimage'){
+            return '/edit/upload';
+        }else{
+            return this._bkGetActionUrl.call(this, action);
+        }
+    };
+</script>
+
+</body>
+</html>

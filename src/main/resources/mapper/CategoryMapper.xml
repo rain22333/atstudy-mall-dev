@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.atstudy.mapper.CategoryMapper">
+
+    <insert id="insertOne">
+        insert into category
+            (cate_name,cate_sort,createtime,updatetime,cate_parentid)
+        values
+            (
+                #{category.cateName},
+                #{category.cateSort},
+                #{category.createtime},
+                #{category.updatetime},
+                #{category.cateParentid}
+            )
+    </insert>
+
+    <update id="updateOne">
+        update category set
+            cate_name = #{category.cateName},
+            cate_sort  = #{category.cateSort},
+            updatetime = #{category.updatetime},
+            cate_parentid = #{category.cateParentid}
+        where
+            cate_id = #{category.cateId}
+    </update>
+
+    <select id="listBySearchBo" resultMap="category">
+        select * from category
+        <where>
+            <if test="searchBo.cateId != null">
+                cate_id = #{searchBo.cateId}
+            </if>
+            <if test="searchBo.cateName != null and searchBo.cateName.length > 0">
+                and cate_name like '%${searchBo.cateName}%'
+            </if>
+            <if test="searchBo.cateParentid != null and searchBo.cateParentid != -1">
+                and cate_parentid = #{searchBo.cateParentid}
+            </if>
+        </where>
+        limit
+            #{pageBo.startIndex},#{pageBo.pageSize}
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(*) from category
+        <where>
+            <if test="searchBo.cateId != null">
+                cate_id = #{searchBo.cateId}
+            </if>
+            <if test="searchBo.cateName != null and searchBo.cateName.length > 0">
+                and cate_name like '%${searchBo.cateName}%'
+            </if>
+            <if test="searchBo.cateParentid != null and searchBo.cateParentid != -1">
+                and cate_parentid = #{searchBo.cateParentid}
+            </if>
+        </where>
+    </select>
+
+    <select id="list" resultMap="category">
+        select * from category
+    </select>
+
+    <select id="getByParentId" resultMap="category">
+        select * from category where cate_id = #{id}
+    </select>
+    <select id="getByCateName" resultType="com.atstudy.entity.Category">
+        select * from category where cate_name = #{cateName}
+    </select>
+
+    <select id="getByCateId" resultMap="category">
+        select * from category where cate_id = #{cateId}
+    </select>
+
+    <select id="getIdListBySpuId" resultType="java.lang.Integer">
+        select cate_id from cate_spu where spu_id = #{spuId}
+    </select>
+
+
+    <resultMap id="category" type="com.atstudy.entity.Category">
+        <result column="cate_id" property="cateId"/>
+        <result column="cate_name" property="cateName"/>
+        <result column="cate_sort" property="cateSort"/>
+        <result column="cate_channel" property="cateChannel"/>
+        <result column="cate_parentid" property="cateParentid"/>
+        <association property="category" column="cate_parentid"
+                     javaType="com.atstudy.entity.Category"
+                     select="com.atstudy.mapper.CategoryMapper.getByParentId"/>
+    </resultMap>
+</mapper>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.atstudy.mapper.SpuAttrKeyCategoryMapper">
+    <insert id="insert">
+        insert into spu_attr_key_categories
+            (spu_attr_key_id,category_id)
+        values
+            (#{keyId},#{cateId})
+    </insert>
+    <delete id="deleteBatchByKeyId">
+        delete from spu_attr_key_categories where spu_attr_key_id = #{keyId}
+    </delete>
+
+    <delete id="deleteBatchByKeyIdList">
+        delete from spu_attr_key_categories where spu_attr_key_id in
+        <foreach collection="idList" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <select id="listCateIdByKeyId" resultType="java.lang.Integer">
+        select category_id from spu_attr_key_categories where spu_attr_key_id = #{keyId}
+    </select>
+</mapper>

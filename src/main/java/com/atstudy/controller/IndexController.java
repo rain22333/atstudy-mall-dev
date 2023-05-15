@@ -15,6 +15,12 @@ public class IndexController {
 
 
 
+    @RequestMapping("/success")
+    public String success(){
+
+        return "index/success";
+    }
+
     @RequestMapping({"/","/index"})
     public String index(Authentication auth, Model model){
         // 获取到用户对象

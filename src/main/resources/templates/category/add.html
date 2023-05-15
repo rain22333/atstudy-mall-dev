@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>添加分类</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.js"></script>
+    <script th:src="@{/js/bootstrap-4.6.1.min.js}"></script>
+    <link th:href="@{/css/bootstrap-4.6.1.min.css}" rel="stylesheet">
+</head>
+<body>
+
+
+<div class="container-fluid">
+    <form action="/category/save" method="post">
+
+        <div class="input-group my-2">
+            <div class="input-append">
+                <div class="input-group-text">分类名称</div>
+            </div>
+            <input type="text" name="cateName" class="form-control" placeholder="请输入分类名称">
+        </div>
+
+        <div class="info"></div>
+
+        <div class="input-group my-2">
+            <div class="input-append">
+                <div class="input-group-text">分类编号</div>
+            </div>
+            <input type="text" name="cateSort" class="form-control" placeholder="请输入分类编号">
+        </div>
+
+        <div class="input-group my-2">
+            <div class="input-append">
+                <div class="input-group-text">父级分类</div>
+            </div>
+            <select name="cateParentid">
+                <option value="-1">请选择父级分类</option>
+                <option th:each="cate : ${cateList}"
+                    th:value="${cate.cateId}"
+                    th:text="${cate.cateName}"></option>
+            </select>
+        </div>
+
+
+
+        <button type="submit" class="my-3 btn btn-primary">添加分类</button>
+    </form>
+</div>
+
+<script>
+        // 角色名称校验
+    $("input[name='cateName']").change(function(){
+
+        // 发送ajax请求
+        $.ajax({
+            url : "/category/validName",
+            type :　"GET",
+            data: {cateName :$(this).val() },
+            success : function(data){
+                if(data == "true"){
+                    $(".info").html("<font color='green'>可用的分类名</font>")
+
+                }else{
+                    $(".info").html("<font color='red'>该分类已经存在</font>")
+                }
+
+            }
+        })
+    })
+</script>
+
+</body>
+</html>

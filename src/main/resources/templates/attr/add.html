@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>添加参数</title>
+    <script th:src="@{/js/bootstrap-4.6.1.min.js}"></script>
+    <script th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script th:src="@{/js/global.js}"></script>
+    <link th:href="@{/css/bootstrap-4.6.1.min.css}" rel="stylesheet">
+</head>
+<body>
+
+
+<div class="container-fluid">
+    <form action="/attr/save" method="post">
+
+        <div class="input-group my-2">
+            <div class="input-append">
+                <div class="input-group-text">属性键名称</div>
+            </div>
+            <input type="text" name="keyName" class="form-control" placeholder="请输入属性键名称">
+        </div>
+
+        <div class="input-group my-2">
+            <div class="input-append">
+                <div class="input-group-text">请选择属性分类</div>
+            </div>
+            <select name="keyIssku" class="form-control">
+                <option value="0">筛选属性</option>
+                <option value="1">规格属性</option>
+            </select>
+        </div>
+
+        <div class="input-group my-2">
+            <div class="input-append">
+                <div class="input-group-text">请选择属性等级</div>
+            </div>
+            <select name="keyIshigh" class="form-control">
+                <option value="0">普通属性</option>
+                <option value="1">高级属性</option>
+            </select>
+        </div>
+
+
+        <div class="my-2 input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text">属性值</div>
+            </div>
+            <button type="button" class="btn btn-success btn-add">+</button>
+        </div>
+
+        <div class="my-2 row attr-value-group">
+            <div class="col-6 attr-value my-2">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">属性值名称</div>
+                    </div>
+                    <input type="text" name="valueList[0].valueName" placeholder="请输入属性值名称" class="form-control attr-value-name">
+                    <button type="button" class="btn btn-danger btn-dis">-</button>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="my-2 input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text">分类</div>
+            </div>
+            <button type="button" class="btn btn-success btn-cate-add">+</button>
+        </div>
+
+
+        <div class="my-2 row cate-group">
+            <div class="col-6 cate my-2">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">分类名称</div>
+                    </div>
+                    <select class="form-control" name="idList">
+                        <option value="-1">选择分类</option>
+                        <option th:each="cate : ${cateList}"
+                            th:value="${cate.cateId}"
+                            th:text="${cate.cateName}">默认分类</option>
+                    </select>
+                    <button type="button" class="btn btn-danger btn-cate-dis">-</button>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="my-3 btn btn-primary">添加属性</button>
+    </form>
+</div>
+
+
+<script>
+
+
+    function refresh(){
+        // 遍历每一一个属性值
+        $(".attr-value").each(function(index,item){
+            $(this).find(".attr-value-name").prop("name","valueList[" + index + "].valueName")
+        })
+    }
+
+    // + 点击事件
+    $(".btn-cate-add").click(function(){
+        let clone = $(".cate").last().clone(true)
+
+        clone.appendTo( $(".cate-group") )
+    })
+
+
+    // - 点击事件
+    $(".btn-cate-dis").click(function(){
+
+        // 如果attr-value只剩下一个，不让删除
+        if( $(".cate").length > 1){
+            $(this).parents(".cate").remove()
+        }
+    })
+
+
+    // + 点击事件
+    $(".btn-add").click(function(){
+        let clone = $(".attr-value").last().clone(true)
+
+        clone.appendTo( $(".attr-value-group") )
+        refresh()
+    })
+
+
+    // - 点击事件
+    $(".btn-dis").click(function(){
+
+        // 如果attr-value只剩下一个，不让删除
+        if( $(".attr-value").length > 1){
+            $(this).parents(".attr-value").remove()
+            refresh()
+        }
+    })
+</script>
+
+</body>
+</html>

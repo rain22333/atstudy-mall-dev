@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.atstudy.mapper.SpuAttrKeyMapper">
+
+    <insert id="insertOne">
+        insert into spu_attr_key
+            (key_id,key_name,key_issku,key_ishigh,createtime,updatetime)
+        values
+            (
+                #{spuAttrKey.keyId},
+                #{spuAttrKey.keyName},
+                #{spuAttrKey.keyIssku},
+                #{spuAttrKey.keyIshigh},
+                #{spuAttrKey.createtime},
+                #{spuAttrKey.updatetime}
+            )
+    </insert>
+    <update id="updateOne">
+        update spu_attr_key set
+            key_name = #{spuAttrKey.keyName},
+            key_issku = #{spuAttrKey.keyIssku},
+            key_ishigh = #{spuAttrKey.keyIshigh},
+            updatetime = #{spuAttrKey.updatetime}
+        where
+            key_id = #{spuAttrKey.keyId}
+    </update>
+
+    <delete id="deleteOneByKeyId">
+        delete from spu_attr_key where key_id = #{keyId}
+    </delete>
+
+    <delete id="deleteBatchByIdList">
+        delete from spu_attr_key where key_id in
+        <foreach collection="idList" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="listBySearchBo" resultMap="AttrKeyWithValueList">
+        select * from spu_attr_key
+        <where>
+            <if test="searchBo.keyId != null and searchBo.keyId.length > 0">
+                key_id = #{searchBo.keyId}
+            </if>
+            <if test="searchBo.keyName != null and searchBo.keyName.length > 0">
+                and key_name like '%${searchBo.keyName}%'
+            </if>
+            <if test="searchBo.keyIssku != null and searchBo.keyIssku != -1">
+                and key_issku = #{searchBo.keyIssku}
+            </if>
+            <if test="searchBo.keyIshigh != null and searchBo.keyIshigh != -1">
+                and key_ishigh = #{searchBo.keyIshigh}
+            </if>
+        </where>
+        order by createtime
+        limit
+            #{pageBo.startIndex},#{pageBo.pageSize}
+    </select>
+    <select id="getCount" resultType="java.lang.Long">
+        select count(*) from spu_attr_key
+        <where>
+            <if test="searchBo.keyId != null and searchBo.keyId.length > 0">
+                key_id = #{searchBo.keyId}
+            </if>
+            <if test="searchBo.keyName != null and searchBo.keyName.length > 0">
+                and key_name like '%${searchBo.keyName}%'
+            </if>
+            <if test="searchBo.keyIssku != null and searchBo.keyIssku != -1">
+                and key_issku = #{searchBo.keyIssku}
+            </if>
+            <if test="searchBo.keyIshigh != null and searchBo.keyIshigh != -1">
+                and key_ishigh =  #{searchBo.keyIshigh}
+            </if>
+        </where>
+    </select>
+
+    <select id="getByKeyId" resultMap="AttrKeyWithValueList">
+        select * from spu_attr_key where key_id = #{keyId}
+    </select>
+    <select id="getKeyListBySpuId" resultMap="AttrKeyWithValueList">
+        SELECT
+            DISTINCT d.*
+        FROM
+            spu a
+        JOIN
+            spu_attr_value_spus b
+        ON
+            a.spu_id = b.spu_id
+        JOIN
+            spu_attr_value c
+        ON
+            b.spu_attr_value_id = c.id
+        JOIN
+            spu_attr_key d
+        ON
+            c.value_attr_key_id = d.key_id
+        WHERE
+            d.key_issku = 1 AND a.spu_id = #{spuId}
+    </select>
+
+
+    <resultMap id="AttrKeyWithValueList" type="com.atstudy.entity.SpuAttrKey">
+        <result column="key_id" property="keyId"/>
+        <result column="key_name" property="keyName"/>
+        <result column="key_issku" property="keyIssku"/>
+        <result column="key_ishigh" property="keyIshigh"/>
+        <result column="createtime" property="createtime"/>
+        <result column="updatetime" property="updatetime"/>
+        <collection property="valueList" column="key_id"
+                    ofType="com.atstudy.entity.SpuAttrValue"
+                    select="com.atstudy.mapper.SpuAttrValueMapper.listByKeyId"/>
+    </resultMap>
+</mapper>

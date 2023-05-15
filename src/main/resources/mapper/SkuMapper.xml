@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.atstudy.mapper.SkuMapper">
+
+    <insert id="insertOne">
+        insert into sku
+        (
+            sku_spu_id,
+            sku_name,
+            sku_spuattr,
+            sku_price,
+            sku_originalprice,
+            sku_costprice,
+            sku_quantity,
+            createtime,
+            updatetime
+        )
+        values
+        (
+            #{sku.skuSpuId},
+            #{sku.skuName},
+            #{sku.skuSpuattr},
+            #{sku.skuPrice},
+            #{sku.skuOriginalprice},
+            #{sku.skuCostprice},
+            #{sku.skuQuantity},
+            #{sku.createtime},
+            #{sku.updatetime}
+        )
+
+    </insert>
+
+    <delete id="deleteBatchBySpuIdList">
+        delete from sku where sku_spu_id in
+        <foreach collection="idList" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="listBySearchBo" resultType="com.atstudy.entity.Sku">
+        select * from sku
+        <where>
+            <if test="searchBo.skuId !=  null">
+                sku_id = #{searchBo.skuId}
+            </if>
+            <if test="searchBo.skuSpuId !=  null">
+                and sku_spu_id = #{searchBo.skuSpuId}
+            </if>
+            <if test="searchBo.skuName !=  null and searchBo.skuName.length > 0">
+                and sku_name like '%${searchBo.skuName}%'
+            </if>
+            <if test="searchBo.sortno !=  null">
+                and sortno = #{searchBo.sortno}
+            </if>
+            <if test="searchBo.maxPrice !=  null and searchBo.maxPrice != 0">
+                and sku_price &lt;= #{searchBo.maxPrice}
+            </if>
+            <if test="searchBo.minPrice !=  null">
+                and sku_price &gt;= #{searchBo.minPrice}
+            </if>
+            <if test="searchBo.maxSkuQuantity !=  null">
+                and sku_quantity &lt;= #{searchBo.maxSkuQuantity}
+            </if>
+            <if test="searchBo.minSkuQuantity !=  null">
+                and sku_quantity &gt;= #{searchBo.minSkuQuantity}
+            </if>
+        </where>
+        limit
+            #{pageBo.startIndex},#{pageBo.pageSize}
+    </select>
+
+    <select id="getCount" resultType="java.lang.Long">
+        select count(*) from sku
+        <where>
+            <if test="searchBo.skuId !=  null">
+                sku_id = #{searchBo.skuId}
+            </if>
+            <if test="searchBo.skuSpuId !=  null">
+                and sku_spu_id = #{searchBo.skuSpuId}
+            </if>
+            <if test="searchBo.skuName !=  null and searchBo.skuName.length > 0">
+                and sku_name like '%${searchBo.skuName}%'
+            </if>
+            <if test="searchBo.sortno !=  null">
+                and sortno = #{searchBo.sortno}
+            </if>
+            <if test="searchBo.maxPrice !=  null and searchBo.maxPrice != 0">
+                and sku_price &lt;= #{searchBo.maxPrice}
+            </if>
+            <if test="searchBo.minPrice !=  null">
+                and sku_price &gt;= #{searchBo.minPrice}
+            </if>
+            <if test="searchBo.maxSkuQuantity !=  null">
+                and sku_quantity &lt;= #{searchBo.maxSkuQuantity}
+            </if>
+            <if test="searchBo.minSkuQuantity !=  null">
+                and sku_quantity &gt;= #{searchBo.minSkuQuantity}
+            </if>
+        </where>
+    </select>
+</mapper>

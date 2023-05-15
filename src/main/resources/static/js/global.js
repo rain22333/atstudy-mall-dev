@@ -866,3 +866,5 @@ function accMul(arg1, arg2) {
 Number.prototype.mul = function (arg) {
     return accMul(arg, this);
 }
+
+

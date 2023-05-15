@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑商品</title>
+    <script th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script th:src="@{/js/bootstrap-4.6.1.min.js}"></script>
+    <script th:src="@{/js/global.js}"></script>
+    <link th:href="@{/css/bootstrap-4.6.1.min.css}" rel="stylesheet">
+
+    <!--ueditor配置文件-->
+    <script th:src="@{/edit/ueditor.config.js}"></script>
+    <!--ueditor核心-->
+    <script th:src="@{/edit/ueditor.all.js}"></script>
+    <!--中文语言包-->
+    <script th:src="@{/edit/zh-cn.js}"></script>
+
+
+</head>
+<body>
+<div class="container-fluid">
+    <form action="/spu/alter" method="post">
+
+        <div class="input-group my-2">
+            <div class="input-append">
+                <div class="input-group-text">商品Spuid</div>
+            </div>
+            <input type="text" name="spuId" class="form-control" th:value="${spu.spuId}" readonly>
+        </div>
+
+        <div class="input-group my-2">
+            <div class="input-append">
+                <div class="input-group-text">商品Spu名称</div>
+            </div>
+            <input type="text" name="spuName" class="form-control" placeholder="请输入商品名称" th:value="${spu.spuName}">
+        </div>
+
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <span class="input-group-text">商品标题</span>
+            </div>
+            <textarea class="form-control" name="spuTitle" aria-label="With textarea" placeholder="请输入商品标题" th:text="${spu.spuTitle}"></textarea>
+        </div>
+
+
+
+
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect01">规格类型</label>
+            </div>
+            <select class="custom-select" id="inputGroupSelect01" name="spuSkuType">
+                <option value="1" th:selected="${spu.spuSkuType} == 1">多规格</option>
+                <option value="0" th:selected="${spu.spuSkuType} == 0">单规格</option>
+            </select>
+        </div>
+
+
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect02">上架状态</label>
+            </div>
+            <select class="custom-select" id="inputGroupSelect02" name="spuStatus">
+                <option value="0" th:selected="${spu.spuStatus} == 0">上架</option>
+                <option value="1" th:selected="${spu.spuStatus} == 1">下架</option>
+            </select>
+        </div>
+
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect03">商品品牌</label>
+            </div>
+            <select class="custom-select" id="inputGroupSelect03" name="spuBrandId">
+                <option value="-1">请选择商品品牌</option>
+                <option th:each="brand : ${brandList}"
+                        th:value="${brand.brandId}"
+                        th:text="${brand.brandName}"
+                        th:selected="${spu.spuBrandId} == ${brand.brandId}"></option>
+            </select>
+        </div>
+
+
+
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <span class="input-group-text">添加分类</span>
+            </div>
+            <button type="button" class="btn btn-primary cate-add">+</button>
+        </div>
+
+        <div class="row cate-group">
+            <!--idList长度为0，意味着当前商品spu没有与之相关联的分类-->
+            <template th:if="${idList.size()} == 0">
+                <div class="input-group col-4 my-2 cate" th:each="id : ${idList}">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="inputGroupSelect05">商品分类</label>
+                    </div>
+                    <select class="custom-select" id="inputGroupSelect05" name="cateId">
+                        <option value="-1">请选择商品分类</option>
+                        <option th:each="cate : ${cateList}"
+                                th:value="${cate.cateId}"
+                                th:text="${cate.cateName}"
+                                ></option>
+                    </select>
+                    <button class="btn btn-danger cate-del">-</button>
+                </div>
+            </template>
+
+                <div class="input-group col-4 my-2 cate" th:each="id : ${idList}">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="inputGroupSelect04">商品分类</label>
+                    </div>
+                    <select class="custom-select" id="inputGroupSelect04" name="cateId">
+                        <option value="-1">请选择商品分类</option>
+                        <option th:each="cate : ${cateList}"
+                                th:value="${cate.cateId}"
+                                th:text="${cate.cateName}"
+                                th:selected="${cate.cateId} == ${id}"></option>
+                    </select>
+                    <button type="button" class="btn btn-danger cate-del">-</button>
+                </div>
+
+
+        </div>
+
+
+
+
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <span class="input-group-text">商品介绍</span>
+            </div>
+            <textarea name="spuIntroduction" id="info" aria-label="With textarea" placeholder="请输入商品介绍" th:text="${spu.spuIntroduction}"></textarea>
+        </div>
+
+        <button type="submit" class="my-3 btn btn-primary">保存商品</button>
+    </form>
+</div>
+
+
+<div style="height: 100px"></div>
+
+<script>
+
+
+    // 在script标签中将目标文本域标签替换成富文本编辑器
+    let editor = UE.getEditor('info');
+
+    UE.Editor.prototype._bkGetActionUrl = UE.Editor.prototype.getActionUrl;
+    UE.Editor.prototype.getActionUrl = function(action) {
+        if (action == 'uploadimage'){
+            return '/edit/upload';
+        }else{
+            return this._bkGetActionUrl.call(this, action);
+        }
+    };
+
+    // 给添加分类按钮绑定点击事件
+    $(".cate-add").click(function(){
+        // 克隆一份商品分类控件
+        let clone = $(".cate").last().clone(true)
+        // 将克隆出来额控件添加到cate-group中
+        clone.find(".custom-select").val(-1)
+        clone.appendTo( $(".cate-group") )
+
+    })
+
+    // 给删除按钮绑定点击事件
+    $(".cate-del").click(function(){
+
+        // 只有当分类数量大于1才能够删除
+        if( $(".cate").length > 1){
+            $(this).parents(".cate").remove()
+        }
+    })
+
+</script>
+</body>
+</html>

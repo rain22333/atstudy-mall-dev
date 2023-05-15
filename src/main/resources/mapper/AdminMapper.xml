@@ -3,12 +3,100 @@
 <mapper namespace="com.atstudy.mapper.AdminMapper">
 
 
+    <insert id="batchInsertAdminRole">
+        insert into admin_role
+            (admin_id,role_id)
+        values
+        <foreach collection="adminAddBo.roleList" item="role" separator=",">
+            (#{adminAddBo.adminId},${role.roleId})
+        </foreach>
+    </insert>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="adminAddBo.adminId">
+        insert into admin
+            (admin_id,admin_name,admin_pass,admin_nickname)
+        values
+            (#{adminAddBo.adminId},#{adminAddBo.adminName},#{adminAddBo.adminPass},#{adminAddBo.adminNickname})
+    </insert>
+
+    <update id="updateByAdmin">
+        update admin set
+        admin_name = #{admin.adminName},admin_nickname=#{admin.adminNickname}
+        where admin_id = #{admin.adminId}
+    </update>
+
+    <delete id="batchDeleteRoleByAdminId">
+        delete from admin_role where admin_id = #{admin.adminId}
+    </delete>
+
+
     <select id="getAdminByName" resultMap="admin">
         select * from admin where admin_name = #{name}
     </select>
 
 
-    <resultMap id="admin" type="com.atstudy.entity.Admin">
+    <select id="listByAdminSearchBo" resultMap="admin" >
+        select
+            distinct a.*
+        from
+            admin a
+        left join
+            admin_role b
+        on
+            a.admin_id = b.admin_id
+        <where>
+            <if test="adminSearchBo.adminId != null">
+                a.admin_id = #{adminSearchBo.adminId}
+            </if>
+            <if test="adminSearchBo.adminName != null and adminSearchBo.adminName.length > 0">
+                and a.admin_name = #{adminSearchBo.adminName}
+            </if>
+            <if test="adminSearchBo.adminNickname != null and adminSearchBo.adminNickname.length > 0">
+                and a.admin_nickname = #{adminSearchBo.adminNickname}
+            </if>
+            <if test="adminSearchBo.roleId != null and adminSearchBo.roleId != -1">
+                and b.role_id = #{adminSearchBo.roleId}
+            </if>
+        </where>
+
+
+        order by a.admin_id
+        limit
+            #{pageBo.startIndex},#{pageBo.pageSize}
+
+    </select>
+
+    <select id="getCount" resultType="java.lang.Long">
+        select
+            count(distinct a.admin_id)
+        from
+            admin a
+        left join
+            admin_role b
+        on
+            a.admin_id = b.admin_id
+        <where>
+            <if test="adminSearchBo.adminId != null">
+                a.admin_id = #{adminSearchBo.adminId}
+            </if>
+            <if test="adminSearchBo.adminName != null and adminSearchBo.adminName.length > 0">
+                and a.admin_name = #{adminSearchBo.adminName}
+            </if>
+            <if test="adminSearchBo.adminNickname != null and adminSearchBo.adminNickname.length > 0">
+                and a.admin_nickname = #{adminSearchBo.adminNickname}
+            </if>
+            <if test="adminSearchBo.roleId != null and adminSearchBo.roleId != -1">
+                and b.role_id = #{adminSearchBo.roleId}
+            </if>
+        </where>
+
+    </select>
+    <select id="getAdminById" resultMap="admin">
+        select * from admin where admin_id = #{id}
+    </select>
+
+
+    <resultMap id="admin" type="com.atstudy.entity.Admin" >
         <result column="admin_id" property="adminId"/>
         <result column="admin_name" property="adminName"/>
         <result column="admin_pass" property="adminPass"/>

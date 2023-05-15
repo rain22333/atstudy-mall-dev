@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.atstudy.mapper.SpuMapper">
+
+    <insert id="insertOne" useGeneratedKeys="true" keyProperty="spu.spuId">
+        insert into spu
+            (
+                spu_name,
+                spu_title,
+                spu_introduction,
+                spu_skutype,
+                spu_status,
+                createtime,
+                updatetime,
+                spu_brand_id
+            )
+        values
+            (
+                #{spu.spuName},
+                #{spu.spuTitle},
+                #{spu.spuIntroduction},
+                #{spu.spuSkuType},
+                #{spu.spuStatus},
+                #{spu.createtime},
+                #{spu.updatetime},
+                #{spu.spuBrandId}
+            )
+
+    </insert>
+
+    <insert id="insertCateSpu">
+        insert into cate_spu
+            (spu_id,cate_id)
+        values
+            (#{spuId},#{cateId})
+    </insert>
+
+    <insert id="insertCateSpuByIdList">
+        insert into cate_spu
+            (spu_id,cate_id)
+        values
+            <foreach collection="idList" item="id" separator=",">
+                (#{spuId},#{id})
+            </foreach>
+    </insert>
+
+    <update id="updateOne">
+        update spu set
+            spu_name = #{spu.spuName},
+            spu_title = #{spu.spuTitle},
+            spu_introduction = #{spu.spuIntroduction},
+            spu_unit = #{spu.spuUnit},
+            spu_sketchtype = #{spu.spuSketchtype},
+            spu_sketch = #{spu.spuSketch},
+            spu_specs = #{spu.spuSpecs},
+            spu_skutype = #{spu.spuSkuType},
+            spu_status = #{spu.spuStatus},
+            updatetime = #{spu.updatetime},
+            spu_brand_id = #{spu.spuBrandId}
+        where
+            spu_id = #{spu.spuId}
+    </update>
+    <delete id="deleteSpuCateBySpuId">
+        delete from cate_spu where spu_id = #{spuId}
+    </delete>
+
+
+    <select id="listBySearchBo" resultMap="spu">
+        select
+            distinct a.*
+        from
+            spu a
+        join
+            cate_spu b
+        on
+         a.spu_id = b.spu_id
+        <where>
+            <if test="searchBo.spuId != null">
+                a.spu_id = #{searchBo.spuId}
+            </if>
+            <if test="searchBo.spuName != null and searchBo.SpuName.length > 0">
+                a.spu_name like '%${searchBo.spuName}%'
+            </if>
+            <if test="searchBo.spuStatus != null and searchBo.spuStatus != -1">
+                a.spu_status = #{searchBo.spuStatus}
+            </if>
+            <if test="searchBo.spuBrandId != null and searchBo.spuBrandId.length > 0 and searchBo.spuBrandId != -1">
+                a.spu_brand_id = #{searchBo.spuBrandId}
+            </if>
+            <if test="searchBo.cateId != null and searchBo.cateId != -1">
+                b.cate_id = #{searchBo.cateId}
+            </if>
+        </where>
+        limit
+            #{pageBo.startIndex},#{pageBo.pageSize}
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer">
+        select
+            count(distinct a.spu_id)
+        from
+            spu a
+        join
+            cate_spu b
+        on
+            a.spu_id = b.spu_id
+        <where>
+            <if test="searchBo.spuId != null">
+                a.spu_id = #{searchBo.spuId}
+            </if>
+            <if test="searchBo.spuName != null and searchBo.SpuName.length > 0">
+                a.spu_name like '%${searchBo.spuName}%'
+            </if>
+            <if test="searchBo.spuStatus != null and searchBo.spuStatus != -1">
+                a.spu_status = #{searchBo.spuStatus}
+            </if>
+            <if test="searchBo.spuBrandId != null and searchBo.spuBrandId.length > 0 and searchBo.spuBrandId != -1">
+                a.spu_brand_id = #{searchBo.spuBrandId}
+            </if>
+            <if test="searchBo.cateId != null and searchBo.cateId != -1">
+                b.cate_id = #{searchBo.cateId}
+            </if>
+        </where>
+    </select>
+
+    <select id="getSpuById" resultType="com.atstudy.entity.Spu">
+        select * from spu where spu_id = #{spuId}
+    </select>
+    <select id="list" resultType="com.atstudy.entity.Spu">
+        select * from spu
+    </select>
+
+
+    <resultMap id="spu" type="com.atstudy.entity.Spu">
+        <result column="spu_id" property="spuId"/>
+        <result column="spu_name" property="spuName"/>
+        <result column="spu_title" property="spuTitle"/>
+        <result column="spu_introduction" property="spuIntroduction"/>
+        <result column="spu_unit" property="spuUnit"/>
+        <result column="spu_sketchtype" property="spuSketchtype"/>
+        <result column="spu_sketch" property="spuSketch"/>
+        <result column="spu_specs" property="spuSpecs"/>
+        <result column="spu_skutype" property="spuSkuType"/>
+        <result column="spu_status" property="spuStatus"/>
+        <result column="createtime" property="createtime"/>
+        <result column="updatetime" property="updatetime"/>
+        <result column="spu_brand_id" property="spuBrandId"/>
+
+        <association property="brand" column="spu_brand_id"
+                     javaType="com.atstudy.entity.Brand"
+                     select="com.atstudy.mapper.BrandMapper.getBrandById"/>
+
+    </resultMap>
+</mapper>
